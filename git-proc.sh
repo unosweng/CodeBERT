@@ -1,4 +1,6 @@
-# Bold High Intensty
+#!/bin/bash
+
+# Bold High Intensity Colors
 BIBlack="\033[1;90m"      # Black
 BIRed="\033[1;91m"        # Red
 BIGreen="\033[1;92m"      # Green
@@ -8,45 +10,49 @@ BIPurple="\033[1;95m"     # Purple
 BICyan="\033[1;96m"       # Cyan
 BIWhite="\033[1;97m"      # White
 
-# High Intensty backgrounds
+# High Intensity Backgrounds
 On_IBlack="\033[0;100m"   # Black
 On_IRed="\033[0;101m"     # Red
 On_IGreen="\033[0;102m"   # Green
 On_IYellow="\033[0;103m"  # Yellow
 On_IBlue="\033[0;104m"    # Blue
-On_IPurple="\033[10;95m"  # Purple
+On_IPurple="\033[0;105m"  # Purple
 On_ICyan="\033[0;106m"    # Cyan
 On_IWhite="\033[0;107m"   # White
 
-BICyan='\033[1;96m'
-COLOR_B='\033[1;90m'
-BIGreen='\033[1;92m'
-COLOR_D='\033[0m' # No Color
-COLOR_E='\033[0;31m'
-
+# Standard Colors
 RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[0;33m'
 NC='\033[0m' # No Color
 
-
-echo ${RED}'git pull'${NC}
+# Display action
+echo -e "${RED}Performing git pull...${NC}"
 git pull
 
-# echo -e ${ACTION}Checking Git repo. ${COLOR_D}
+# Check current branch
 BRANCH=$(git rev-parse --abbrev-ref HEAD)
-if [ "$BRANCH" != "master" ]; then
-    echo ${RED}'Need to pull.'${NC}
-    git pull
-elif [[ `git status --porcelain` ]]; then
-    echo ${RED}'Need to commit and push.'${NC}
+echo -e "${YELLOW}Current branch: ${BRANCH}${NC}"
+
+# Handle branch logic
+if [ "$BRANCH" != "master" ] && [ "$BRANCH" != "main" ]; then
+    echo -e "${RED}You are not on 'master' or 'main'. Please switch to the appropriate branch!${NC}"
+    exit 1
+elif [[ $(git status --porcelain) ]]; then
+    echo -e "${YELLOW}Uncommitted changes detected.${NC}"
     now=$(date)
-    make -f MakefileGit m="Updated at $now"
+    echo -e "${GREEN}Staging changes...${NC}"
+    git add .
+    echo -e "${GREEN}Committing changes...${NC}"
+    git commit -m "Updated at $now"
+    echo -e "${GREEN}Pushing changes...${NC}"
+    git push
 else
-    git status
-    echo ${RED}'Current branch is up to date with origin/master.'${NC}
+    echo -e "${GREEN}No changes to commit. Your branch is up to date.${NC}"
 fi
-echo ${RED}'Done.'${NC}
-echo
 
+# Final status
+echo -e "${CYAN}Done. Checking status:${NC}"
 git status
-
+echo
 
